@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Scanner;
 
-public class Group0 {
+public class Group4 {
 
 	public static void main(String[] args) throws InterruptedException, FileNotFoundException {
 
@@ -21,7 +21,7 @@ public class Group0 {
 		String inputFileName = args[0];
 		String outFileName = args[1];
 		
-		//runTests();
+		runTests();
 
 		String[] data = readData(inputFileName); // read data as strings
 		
@@ -75,19 +75,57 @@ public class Group0 {
 		public int compare(String o1, String o2) {
 			if(o1.contains("/")){
 				if(o2.contains("/")){
-					return compareFractions(o1, o2);
+
+					if(terminates(o2) && terminates(o1)){
+						return compareDecimals(convertToDecString(o1),convertToDecString(o2));
+					}else{
+						return compareFractions(o1, o2);
+					}
+
+					
 				}else{
+
+					if(terminates(o1)){
+						
+						return compareDecimals(convertToDecString(o1),o2);
+					}else{
 					return compareFractionAndDecimal(o1, o2);
+					}
+				
 				}
 
 			}else{
 				if(o2.contains("/")){
+
+					if(terminates(o2)){
+						return compareDecimals(o1,convertToDecString(o2));
+					}else{
 					return -compareFractionAndDecimal(o2, o1);
+					}
+
 				}else{
 					return compareDecimals(o1,o2);
 				}
 			}
 
+		}
+
+		private boolean terminates(String o){
+			String[] saFrac = o.split("/");
+			try{
+				BigDecimal decimal = (new BigDecimal(saFrac[0])).divide(new BigDecimal(saFrac[1]));
+				return(decimal.precision()<15);
+			} catch(Exception e){
+				return false;
+			}
+			
+		}
+
+		private String convertToDecString(String o){
+			String[] saFrac = o.split("/");
+			double decimalD = ((Double.valueOf(saFrac[0]))/(Double.valueOf(saFrac[1])));
+			String decimal = String.valueOf(decimalD);
+				return decimal;
 		}
 
 		
@@ -160,8 +198,28 @@ public class Group0 {
 		}
 
 
+
 		private int compareDecimals(String o1, String o2) {
-			return (new BigDecimal(o1)).compareTo(new BigDecimal(o2));
+			if (o1.length()<15 && o2.length()<15){
+				double d1 =  Double.parseDouble(o1);
+				double d2 =  Double.parseDouble(o2);
+				int comparisonval = (Double.compare(d1, d2));
+				if (comparisonval<=0){
+					if(comparisonval<0){
+					return -1;
+				}else{
+					return 0;
+				}
+			}else{
+				return 1;
+			}				
+
+			}else{
+				BigDecimal bd1 = new BigDecimal(o1);
+				BigDecimal bd2 = new BigDecimal(o2);
+				return bd1.compareTo(bd2);
+			}
+			
 		}
 
 	}
