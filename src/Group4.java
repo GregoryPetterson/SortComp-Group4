@@ -151,21 +151,21 @@ public class Group4 {
 			//String denominator2 = sa2[1];
 
 			// Checks the num of digits of the product to see if we can store it as a long or if we need to store it as a big integer.
-			if(((sa1[0].length() + sa2[1].length()) < 17) && ((sa2[0].length() + sa1[1].length()) < 17)){
-				Long num1 =  Long.parseLong(sa1[0]);
+			if(((sa1[0].length() + sa2[1].length()) < 16) || ((sa2[0].length() + sa1[1].length()) < 16)){
+				long num1 =  Long.parseLong(sa1[0]);
 				long den1 =  Long.parseLong(sa1[1]);
-				Long num2 =  Long.parseLong(sa2[0]);
+				long num2 =  Long.parseLong(sa2[0]);
 				long den2 =  Long.parseLong(sa2[1]);
 
-				Long crossMult1 = (num1 * den2);
-				Long crossMult2 = (num2 *den1);
+				long crossMult1 = (num1 * den2);
+				long crossMult2 = (num2 *den1);
 			
 			
-			int res = crossMult1.compareTo(crossMult2);	
+			int res = (crossMult1<crossMult2 ? -1 : (crossMult1==crossMult2 ? 0 : 1));	
 			
 			if (res != 0) return res;
 			
-			return num1.compareTo(num2); // note: the numerator may be negative, that would reverse the ordering for negative.
+			return (num1<num2 ? -1 : (num1==num2 ? 0 : 1));  // note: the numerator may be negative, that would reverse the ordering for negative.
 		
 		}else{
 
@@ -188,9 +188,11 @@ public class Group4 {
 
 
 		private int compareDecimals(String o1, String o2) {
-			if (o1.length()<16 && o2.length()<16){
+			if (o1.length()<16 || o2.length()<16){
+				double dec1 = Double.parseDouble(o1);
+				double dec2 = Double.parseDouble(o2);
 				
-				return Double.compare(Double.parseDouble(o1), Double.parseDouble(o2));
+				return (dec1<dec2 ? -1 : (dec1==dec2 ? 0 : 1));
 
 			}else{
 				
@@ -198,6 +200,8 @@ public class Group4 {
 			
 			}
 		}
+
+
 
 
 	}
