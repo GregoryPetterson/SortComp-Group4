@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Scanner;
+import java.lang.Long;
 
 public class Group4 {
 
@@ -21,7 +22,7 @@ public class Group4 {
 		String inputFileName = args[0];
 		String outFileName = args[1];
 		
-		runTests();
+		//runTests();
 
 		String[] data = readData(inputFileName); // read data as strings
 		
@@ -75,57 +76,19 @@ public class Group4 {
 		public int compare(String o1, String o2) {
 			if(o1.contains("/")){
 				if(o2.contains("/")){
-
-					if(terminates(o2) && terminates(o1)){
-						return compareDecimals(convertToDecString(o1),convertToDecString(o2));
-					}else{
-						return compareFractions(o1, o2);
-					}
-
-					
+					return compareFractions(o1, o2);
 				}else{
-
-					if(terminates(o1)){
-						
-						return compareDecimals(convertToDecString(o1),o2);
-					}else{
 					return compareFractionAndDecimal(o1, o2);
-					}
-				
 				}
 
 			}else{
 				if(o2.contains("/")){
-
-					if(terminates(o2)){
-						return compareDecimals(o1,convertToDecString(o2));
-					}else{
 					return -compareFractionAndDecimal(o2, o1);
-					}
-
 				}else{
 					return compareDecimals(o1,o2);
 				}
 			}
 
-		}
-
-		private boolean terminates(String o){
-			String[] saFrac = o.split("/");
-			try{
-				BigDecimal decimal = (new BigDecimal(saFrac[0])).divide(new BigDecimal(saFrac[1]));
-				return(decimal.precision()<15);
-			} catch(Exception e){
-				return false;
-			}
-			
-		}
-
-		private String convertToDecString(String o){
-			String[] saFrac = o.split("/");
-			double decimalD = ((Double.valueOf(saFrac[0]))/(Double.valueOf(saFrac[1])));
-			String decimal = String.valueOf(decimalD);
-				return decimal;
 		}
 
 		
@@ -180,47 +143,62 @@ public class Group4 {
 			// to make sure we are not losing precision
 			
 			String[] sa1 = fraction1.split("/");
-			BigInteger numerator1 = new BigInteger(sa1[0]);
-			BigInteger denominator1 = new BigInteger(sa1[1]);
+			//String numerator1 = sa1[0];
+			//String denominator1 = sa1[1];
 			
 			String[] sa2 = fraction2.split("/");
-			BigInteger numerator2 = new BigInteger(sa2[0]);
-			BigInteger denominator2 = new BigInteger(sa2[1]);
+			//String numerator2 = sa2[0];
+			//String denominator2 = sa2[1];
+
+			// Checks the num of digits of the product to see if we can store it as a long or if we need to store it as a big integer.
+			if(((sa1[0].length() + sa2[1].length()) < 17) && ((sa2[0].length() + sa1[1].length()) < 17)){
+				Long num1 =  Long.parseLong(sa1[0]);
+				long den1 =  Long.parseLong(sa1[1]);
+				Long num2 =  Long.parseLong(sa2[0]);
+				long den2 =  Long.parseLong(sa2[1]);
+
+				Long crossMult1 = (num1 * den2);
+				Long crossMult2 = (num2 *den1);
 			
-			BigInteger crossMult1 = numerator1.multiply(denominator2);
-			BigInteger crossMult2 = numerator2.multiply(denominator1);
 			
 			int res = crossMult1.compareTo(crossMult2);	
 			
 			if (res != 0) return res;
 			
-			return numerator1.compareTo(numerator2); // note: the numerator may be negative, that would reverse the ordering for negatives
-		}
+			return num1.compareTo(num2); // note: the numerator may be negative, that would reverse the ordering for negative.
+		
+		}else{
 
+			BigInteger bignumerator1 = new BigInteger(sa1[0]);
+			BigInteger bigdenominator1 = new BigInteger(sa1[1]);
+
+			BigInteger bignumerator2 = new BigInteger(sa2[0]);
+			BigInteger bigdenominator2 = new BigInteger(sa2[1]);
+
+			BigInteger crossMult1 = bignumerator1.multiply(bigdenominator2);
+			BigInteger crossMult2 = bignumerator2.multiply(bigdenominator1);
+			
+			int res = crossMult1.compareTo(crossMult2);	
+			
+			if (res != 0) return res;
+			
+			return bignumerator1.compareTo(bignumerator2); // note: the numerator may be negative, that would reverse the ordering for negatives
+			}
+		}
 
 
 		private int compareDecimals(String o1, String o2) {
-			if (o1.length()<15 && o2.length()<15){
-				double d1 =  Double.parseDouble(o1);
-				double d2 =  Double.parseDouble(o2);
-				int comparisonval = (Double.compare(d1, d2));
-				if (comparisonval<=0){
-					if(comparisonval<0){
-					return -1;
-				}else{
-					return 0;
-				}
-			}else{
-				return 1;
-			}				
+			if (o1.length()<16 && o2.length()<16){
+				
+				return Double.compare(Double.parseDouble(o1), Double.parseDouble(o2));
 
 			}else{
-				BigDecimal bd1 = new BigDecimal(o1);
-				BigDecimal bd2 = new BigDecimal(o2);
-				return bd1.compareTo(bd2);
-			}
+				
+				return (new BigDecimal(o1)).compareTo(new BigDecimal(o2));
 			
+			}
 		}
+
 
 	}
 	
