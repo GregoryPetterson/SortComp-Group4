@@ -1,7 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,7 +28,7 @@ public class Group4 {
 		
 		String[] toSort = data.clone(); // clone the data
 
-		sort(toSort); // call the sorting method once for JVM warmup
+		//sort(toSort); // call the sorting method once for JVM warmup
 		
 		toSort = data.clone(); // clone again
 
@@ -73,6 +72,8 @@ public class Group4 {
 
 		for (int i = 0; i < toSortlength; i++) {
 			gonnaSort[i] = new Data(toSort[i].toString());
+			System.out.println(gonnaSort[i].bignumerator.toString());
+			System.out.println(gonnaSort[i].bigdenominator.toString());
 		}
 		
 		Arrays.sort(gonnaSort, new SortingCompetitionComparator());
@@ -80,21 +81,77 @@ public class Group4 {
 	}
 	
 	private static class Data {
-		
 		public String str;
-		public double dub;
-		public BigDecimal bigd;
-		
+		public long numerator;
+		public long denominator;
+		public BigInteger bignumerator;
+		public BigInteger bigdenominator;
+		public int numlength;
+		public int denlength;
 		
 		public Data(String string){
-			str = string;
-			if(str.contains("\\.")){
-			dub = Double.parseDouble(str);
-			bigd = new BigDecimal(str);
-			}
+			if(string.contains("/")){
+				String[] saFrac = string.split("/");
+				this.numlength = saFrac[0].length();
+				this.denlength = saFrac[1].length();
+				if(denlength<18 && numlength<18){
+					this.numerator = Long.valueOf(saFrac[0]);
+					this.denominator = Long.valueOf(saFrac[1]);
+				}
+				this.str = string;
+				this.bignumerator = new BigInteger(saFrac[0]);
+				this.bigdenominator = new BigInteger(saFrac[1]);
+			
+			}else{
+				this.str = string;
 
-		}
-		
+				if(string.contains(".")){
+					String[] saDec = string.split("\\.");
+				this.numlength = saDec[0].length();
+				this.denlength = saDec[1].length();
+				
+				if(denlength<18 && numlength<18){
+					this.numerator = Long.valueOf(saDec[0]);
+					this.denominator = Long.valueOf(saDec[1]);
+				}
+				
+				// BigInteger decnumerator = null;
+				// BigInteger decdenominator = null;
+				
+				if (saDec.length == 1) { // an integer, positive or negative
+				this.bignumerator = new BigInteger(saDec[0]);
+				this.bigdenominator = new BigInteger("1");
+			} else {
+				// find the length of the decimal part
+				int n = saDec[1].length();
+				BigInteger decdenominator = new BigInteger("1"); 
+				// raising 10 to the power n
+				for (int i = 0; i < n; ++i) {
+					decdenominator = decdenominator.multiply(new BigInteger("10"));
+				}
+
+				BigInteger decnumerator = new BigInteger(saDec[1]);
+				// adding the integer part
+				BigInteger intPart = new BigInteger(saDec[0]);
+				
+				if (saDec[0].charAt(0) == '-') { // the number is negative 
+					decnumerator = (intPart.multiply(decdenominator)).subtract(decnumerator);
+				} else {
+					decnumerator = decnumerator.add(intPart.multiply(decdenominator));
+				}
+
+				this.bignumerator = decnumerator;
+				this.bigdenominator = decdenominator;
+					}
+
+				}else{
+					this.numerator = Long.valueOf(string);
+					this.denominator = 1;
+					this.bignumerator = new BigInteger(string);
+					this.bigdenominator = new BigInteger("1");
+				}	
+			}
+		}		
 	}
 
 
@@ -104,108 +161,38 @@ public class Group4 {
 
 		@Override
 		public int compare(Data o1, Data o2) {
-			if(o1.str.contains("/")){
-				if(o2.str.contains("/")){
-					return compareFractions(o1, o2);
-				}else{
-					return compareFractionAndDecimal(o1, o2);
-				}
-
-			}else{
-				if(o2.str.contains("/")){
-					return -compareFractionAndDecimal(o2, o1);
-				}else{
-					return compareDecimals(o1,o2);
-				}
-			}
-
-		}
-
-	
-
-		
-		private int compareFractionAndDecimal(Data fraction, Data decimal) {
-			String[] saFrac = fraction.str.split("/");
-			BigInteger numerator1 = new BigInteger(saFrac[0]);
-			BigInteger denominator1 = new BigInteger(saFrac[1]);
-			
-			//find the length of the decimal's fractional part
-			String[] saDec = decimal.str.split("\\."); // need \\ because . is a special symbol in regex
-			
-			BigInteger numerator2 = null;
-			BigInteger denominator2 = null; 				
-			
-			if (saDec.length == 1) { // an integer, positive or negative
-				numerator2 = new BigInteger(saDec[0]);
-				denominator2 = new BigInteger("1");
-			} else {
-				// find the length of the decimal part
-				int n = saDec[1].length();
-				denominator2 = new BigInteger("1"); 
-				// raising 10 to the power n
-				for (int i = 0; i < n; ++i) {
-					denominator2 = denominator2.multiply(new BigInteger("10"));
-				}
-				numerator2 = new BigInteger(saDec[1]);
-				// adding the integer part
-				BigInteger intPart = new BigInteger(saDec[0]);
-				if (saDec[0].charAt(0) == '-') { // the number is negative 
-					numerator2 = (intPart.multiply(denominator2)).subtract(numerator2);
-				} else {
-					numerator2 = numerator2.add(intPart.multiply(denominator2));
-				}
-			}
-			
-			BigInteger crossMult1 = numerator1.multiply(denominator2);
-			BigInteger crossMult2 = numerator2.multiply(denominator1);
-			
-			int res = crossMult1.compareTo(crossMult2);
-			
-			if (res != 0) return res;
-			
-			if (numerator1.compareTo(new BigInteger("0")) >= 0) {
-				return 1; // for positive, the decimal is smaller
-			} else {
-				return -1; // for negative, the decimal is larger
-			}
+			return compareFractions(o1, o2);
 		}
 
 		private int compareFractions(Data fraction1, Data fraction2) {
 			// compare fraction by multiplication as big integers,
 			// to make sure we are not losing precision
+			if((fraction1.numlength+fraction2.denlength<18)||(fraction1.denlength+fraction2.numlength<18)){
+				Long crossMult1 = (fraction1.numerator * fraction2.denominator);
+				Long crossMult2 = (fraction2.numerator * fraction1.denominator);
+				if(crossMult1<crossMult2){
+					return -1;
+				}else{
+					if(crossMult1==crossMult2){
+						return 0;
+					}else{
+						return 1;
+					}
+					
+				}
+			}else{
 			
-			String[] sa1 = fraction1.str.split("/");
-			BigInteger numerator1 = new BigInteger(sa1[0]);
-			BigInteger denominator1 = new BigInteger(sa1[1]);
 			
-			String[] sa2 = fraction2.str.split("/");
-			BigInteger numerator2 = new BigInteger(sa2[0]);
-			BigInteger denominator2 = new BigInteger(sa2[1]);
-			
-			BigInteger crossMult1 = numerator1.multiply(denominator2);
-			BigInteger crossMult2 = numerator2.multiply(denominator1);
+			BigInteger crossMult1 = fraction1.bignumerator.multiply(fraction2.bigdenominator);
+			BigInteger crossMult2 = fraction2.bignumerator.multiply(fraction1.bigdenominator);
 			
 			int res = crossMult1.compareTo(crossMult2);	
 			
 			if (res != 0) return res;
 			
-			return numerator1.compareTo(numerator2); // note: the numerator may be negative, that would reverse the ordering for negatives
-		}
-
-
-		private int compareDecimals(Data o1, Data o2) {
-			if (o1.str.length()<16 || o2.str.length()<16){
-				
-				return (o1.dub<o2.dub ? -1 : (o1.dub==o2.dub ? 0 : 1));
-
-			}else{
-				
-				return o1.bigd.compareTo(o2.bigd);
-			
+			return fraction1.bignumerator.compareTo(fraction2.bignumerator); // note: the numerator may be negative, that would reverse the ordering for negatives
 			}
 		}
-
-
 	}
 	
 	private static void writeOutResult(Data[] sorted, String outputFilename) throws FileNotFoundException {
@@ -215,29 +202,5 @@ public class Group4 {
 		}
 		out.close();
 	}
-	
-	// private static void runTests() {
-	// 	SortingCompetitionComparator comp = new SortingCompetitionComparator();
-		
-	// 	// Two fractions, positive and negative
-	// 	System.out.println("-1/2 and 1/4:" + comp.compareFractions("-1/2","1/4"));
-	// 	System.out.println("1/2 and 1/3:" + comp.compareFractions("1/2","1/3"));
-	// 	System.out.println("1/2 and 2/4:" + comp.compareFractions("1/2","2/4"));
-	// 	System.out.println("-1/2 and -2/4:" + comp.compareFractions("-1/2","-2/4"));
-		
-	// 	// Fraction and a decimal
-	// 	System.out.println("1/4 and 0.5:" + comp.compareFractionAndDecimal("1/4","0.5"));
-	// 	System.out.println("2/4 and 1.5:" + comp.compareFractionAndDecimal("2/4","1.5"));
-	// 	System.out.println("-2/4 and -1.5:" + comp.compareFractionAndDecimal("-2/4","-1.5"));
-	// 	System.out.println("-2/4 and 0:" + comp.compareFractionAndDecimal("-2/4","0"));
-	// 	System.out.println("1/2 and -0.5:" + comp.compareFractionAndDecimal("1/2","-0.5"));
-	// 	System.out.println("1/2 and 0.5:" + comp.compareFractionAndDecimal("1/2","0.5"));
-	// 	System.out.println("-1/2 and -0.5:" + comp.compareFractionAndDecimal("-1/2","-0.5"));
-	// 	System.out.println("1/3 and -0.5:" + comp.compareFractionAndDecimal("1/3","-0.5"));
-		
-	// 	System.out.println("-4.9999999999999999999999999999999999 and -5:" + comp.compareDecimals("-4.9999999999999999999999999999999999", "-5"));
-	// 	System.out.println("4.9999999999999999999999999999999999 and 5:" + comp.compareDecimals("4.9999999999999999999999999999999999", "5"));
-		
-	// }
 	
 }
