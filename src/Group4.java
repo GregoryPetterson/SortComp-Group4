@@ -72,8 +72,8 @@ public class Group4 {
 
 		for (int i = 0; i < toSortlength; i++) {
 			gonnaSort[i] = new Data(toSort[i].toString());
-			System.out.println(gonnaSort[i].bignumerator.toString());
-			System.out.println(gonnaSort[i].bigdenominator.toString());
+			System.out.println(gonnaSort[i].numerator);
+			System.out.println(gonnaSort[i].denominator);
 		}
 		
 		Arrays.sort(gonnaSort, new SortingCompetitionComparator());
@@ -160,17 +160,28 @@ public class Group4 {
 	private static class SortingCompetitionComparator implements Comparator<Data> {
 
 		@Override
-		public int compare(Data o1, Data o2) {
-			return compareFractions(o1, o2);
-		}
-
-		private int compareFractions(Data fraction1, Data fraction2) {
+		public int compare(Data fraction1, Data fraction2) {
 			// compare fraction by multiplication as big integers,
 			// to make sure we are not losing precision
 			if((fraction1.numlength+fraction2.denlength<18)||(fraction1.denlength+fraction2.numlength<18)){
 				Long crossMult1 = (fraction1.numerator * fraction2.denominator);
 				Long crossMult2 = (fraction2.numerator * fraction1.denominator);
+				int res;
+
 				if(crossMult1<crossMult2){
+					res = -1;
+				}else{
+					if(crossMult1==crossMult2){
+						res = 0;
+					}else{
+						res = 1;
+					}
+					
+				}
+
+				if (res != 0) return res;
+
+				if(fraction1.numerator<fraction2.numerator){
 					return -1;
 				}else{
 					if(crossMult1==crossMult2){
@@ -180,6 +191,7 @@ public class Group4 {
 					}
 					
 				}
+				
 			}else{
 			
 			
