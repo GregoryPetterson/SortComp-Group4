@@ -72,11 +72,11 @@ public class Group4 {
 
 		for (int i = 0; i < toSortlength; i++) {
 			gonnaSort[i] = new Data(toSort[i].toString());
-			System.out.println(gonnaSort[i].numerator);
-			System.out.println(gonnaSort[i].denominator);
+			// System.out.println(gonnaSort[i].bignumerator);
+			// System.out.println(gonnaSort[i].bigdenominator);
 		}
 		
-		Arrays.sort(gonnaSort, new SortingCompetitionComparator());
+		//Arrays.sort(gonnaSort, new SortingCompetitionComparator());
 		return gonnaSort;
 	}
 	
@@ -110,14 +110,38 @@ public class Group4 {
 				this.numlength = saDec[0].length();
 				this.denlength = saDec[1].length();
 				
+				// String is small enough to fit in long
 				if(denlength<18 && numlength<18){
-					this.numerator = Long.valueOf(saDec[0]);
-					this.denominator = Long.valueOf(saDec[1]);
+					if (saDec.length == 1) { // an integer, positive or negative
+						this.numerator = Long.valueOf(saDec[0]);
+						this.denominator = 1;
+					} else {
+						// find the length of the decimal part
+						int n = saDec[1].length();
+						Long decdenominator = 1L; 
+						// raising 10 to the power n
+						for (int i = 0; i < n; ++i) {
+							decdenominator = decdenominator*10 ;
+						}
+		
+						Long decnumerator = Long.valueOf(saDec[1]);
+						// adding the integer part
+						Long intPart = Long.valueOf(saDec[0]);
+						
+						if (saDec[0].charAt(0) == '-') { // the number is negative 
+							decnumerator = (intPart * decdenominator) - decnumerator;
+						} else {
+							decnumerator = decnumerator + (intPart * decdenominator);
+						}
+		
+						this.numerator = decnumerator;
+						this.denominator = decdenominator;
+							}
 				}
 				
-				// BigInteger decnumerator = null;
-				// BigInteger decdenominator = null;
 				
+				
+				// String fits into BigInteger
 				if (saDec.length == 1) { // an integer, positive or negative
 				this.bignumerator = new BigInteger(saDec[0]);
 				this.bigdenominator = new BigInteger("1");
@@ -163,7 +187,7 @@ public class Group4 {
 		public int compare(Data fraction1, Data fraction2) {
 			// compare fraction by multiplication as big integers,
 			// to make sure we are not losing precision
-			if((fraction1.numlength+fraction2.denlength<18)||(fraction1.denlength+fraction2.numlength<18)){
+			if((fraction1.numlength+fraction2.denlength<18)&&(fraction1.denlength+fraction2.numlength<18)){
 				Long crossMult1 = (fraction1.numerator * fraction2.denominator);
 				Long crossMult2 = (fraction2.numerator * fraction1.denominator);
 				int res;
