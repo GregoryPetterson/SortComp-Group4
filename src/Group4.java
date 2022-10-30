@@ -82,28 +82,40 @@ public class Group4 {
 	
 	private static class Data {
 		public String str;
-		public long numerator;
-		public long denominator;
-		public BigInteger bignumerator;
-		public BigInteger bigdenominator;
+		public int numerator;
+		public int denominator;
+		
 		public int numlength;
 		public int denlength;
 		
 		public Data(String string){
 			if(string.contains("/")){
-				String[] saFrac = string.split("/");
-				this.numlength = saFrac[0].length();
-				this.denlength = saFrac[1].length();
-				if(denlength<18 && numlength<18){
-					this.numerator = Long.valueOf(saFrac[0]);
-					this.denominator = Long.valueOf(saFrac[1]);
-				}
 				this.str = string;
-				this.bignumerator = new BigInteger(saFrac[0]);
-				this.bigdenominator = new BigInteger(saFrac[1]);
+
+				String[] saFrac = string.split("/");
+				
+				if(saFrac[0].length()<10){
+				this.numlength = saFrac[0].length();
+				}else{
+				this.numlength = 10;
+				}
+
+				if(saFrac[1].length()<10){
+					this.denlength = saFrac[1].length();
+					}else{
+					this.denlength = 10;
+					}
+			
+				this.numerator = Integer.valueOf(saFrac[0].substring(0, this.numlength));
+				this.denominator = Integer.valueOf(saFrac[1].substring(0, this.denlength));
+				
+				
+				
 			
 			}else{
 				this.str = string;
+
+				
 
 				if(string.contains(".")){
 					String[] saDec = string.split("\\.");
@@ -111,9 +123,9 @@ public class Group4 {
 				this.denlength = saDec[1].length();
 				
 				// String is small enough to fit in long
-				if(denlength<18 && numlength<18){
+				
 					if (saDec.length == 1) { // an integer, positive or negative
-						this.numerator = Long.valueOf(saDec[0]);
+						this.numerator = Integer.valueOf(saDec[0].substring(0, 18));
 						this.denominator = 1;
 					} else {
 						// find the length of the decimal part
@@ -137,7 +149,7 @@ public class Group4 {
 						this.numerator = decnumerator;
 						this.denominator = decdenominator;
 							}
-				}
+				
 				
 				
 				
