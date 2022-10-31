@@ -66,181 +66,131 @@ public class Group4 {
 	// Note: you may change the return type of the method.
 	// You would need to provide your own function that prints your sorted array to
 	// a file in the exact same format that my program outputs
+
 	private static Data[] sort(String[] toSort) {
 		int toSortlength = (toSort.length);
 		Data[] gonnaSort = new Data[toSortlength];
 
-		for (int i = 0; i < toSortlength; i++) {
+		for (int i = 0; i < toSortlength; i++) {			
 			gonnaSort[i] = new Data(toSort[i].toString());
-			// System.out.println(gonnaSort[i].bignumerator);
-			// System.out.println(gonnaSort[i].bigdenominator);
+			System.out.println(gonnaSort[i].numerator);
+			System.out.println(gonnaSort[i].denominator);
+			
 		}
-		
-		//Arrays.sort(gonnaSort, new SortingCompetitionComparator());
+
+		Arrays.sort(gonnaSort, new SortingCompetitionComparator());
 		return gonnaSort;
 	}
 	
 	private static class Data {
 		public String str;
+
+		boolean boofrac;
+
 		public int numerator;
 		public int denominator;
 		
 		public int numlength;
 		public int denlength;
 		
+		
 		public Data(String string){
 			if(string.contains("/")){
 				this.str = string;
+				this.boofrac = true;
 
 				String[] saFrac = string.split("/");
 				
-				if(saFrac[0].length()<10){
+				if(saFrac[0].length()<4){
 				this.numlength = saFrac[0].length();
 				}else{
-				this.numlength = 10;
+				this.numlength = 4;
 				}
 
-				if(saFrac[1].length()<10){
+				if(saFrac[1].length()<4){
 					this.denlength = saFrac[1].length();
 					}else{
-					this.denlength = 10;
+					this.denlength = 4;
 					}
 			
+					// We're only storing the 4 most significant digits so we can we can cross multiply and have it
+					// still fit in an int.
 				this.numerator = Integer.valueOf(saFrac[0].substring(0, this.numlength));
 				this.denominator = Integer.valueOf(saFrac[1].substring(0, this.denlength));
 				
-				
-				
-			
 			}else{
 				this.str = string;
+				this.boofrac = false;
 
+				String[] saDec = string.split("\\.");
 				
-
-				if(string.contains(".")){
-					String[] saDec = string.split("\\.");
-				this.numlength = saDec[0].length();
-				this.denlength = saDec[1].length();
-				
-				// String is small enough to fit in long
-				
-					if (saDec.length == 1) { // an integer, positive or negative
-						this.numerator = Integer.valueOf(saDec[0].substring(0, 18));
-						this.denominator = 1;
-					} else {
-						// find the length of the decimal part
-						int n = saDec[1].length();
-						Long decdenominator = 1L; 
-						// raising 10 to the power n
-						for (int i = 0; i < n; ++i) {
-							decdenominator = decdenominator*10 ;
-						}
-		
-						Long decnumerator = Long.valueOf(saDec[1]);
-						// adding the integer part
-						Long intPart = Long.valueOf(saDec[0]);
-						
-						if (saDec[0].charAt(0) == '-') { // the number is negative 
-							decnumerator = (intPart * decdenominator) - decnumerator;
-						} else {
-							decnumerator = decnumerator + (intPart * decdenominator);
-						}
-		
-						this.numerator = decnumerator;
-						this.denominator = decdenominator;
-							}
-				
-				
-				
-				
-				// String fits into BigInteger
-				if (saDec.length == 1) { // an integer, positive or negative
-				this.bignumerator = new BigInteger(saDec[0]);
-				this.bigdenominator = new BigInteger("1");
-			} else {
-				// find the length of the decimal part
-				int n = saDec[1].length();
-				BigInteger decdenominator = new BigInteger("1"); 
-				// raising 10 to the power n
-				for (int i = 0; i < n; ++i) {
-					decdenominator = decdenominator.multiply(new BigInteger("10"));
-				}
-
-				BigInteger decnumerator = new BigInteger(saDec[1]);
-				// adding the integer part
-				BigInteger intPart = new BigInteger(saDec[0]);
-				
-				if (saDec[0].charAt(0) == '-') { // the number is negative 
-					decnumerator = (intPart.multiply(decdenominator)).subtract(decnumerator);
-				} else {
-					decnumerator = decnumerator.add(intPart.multiply(decdenominator));
-				}
-
-				this.bignumerator = decnumerator;
-				this.bigdenominator = decdenominator;
-					}
+				if(saDec.length == 1){
+					this.numerator = Integer.valueOf(saDec[0]);
+					this.denominator = 1;
 
 				}else{
-					this.numerator = Long.valueOf(string);
-					this.denominator = 1;
-					this.bignumerator = new BigInteger(string);
-					this.bigdenominator = new BigInteger("1");
-				}	
+					if(saDec[0].length()<4){
+					this.numlength = saDec[0].length();
+					}else{
+						this.numlength = 4;
+					}
+
+					if(saDec[1].length()<4){
+						this.denlength = saDec[1].length();
+					}else{
+						this.denlength = 4;
+					}
+	
+					int wholenum = Integer.valueOf(saDec[0]);
+					this.numerator = Integer.valueOf(saDec[1].substring(0, this.denlength));
+					this.denominator = (int) Math.pow(10, this.denlength);
+					
+					if(saDec[0].contains("-")){
+						this.numerator = ((this.denominator * wholenum) - this.numerator);
+						if(this.numerator<-9999){
+							String temp = String.valueOf(this.numerator);
+							this.numerator = Integer.valueOf(temp.substring(0, 5));
+						}
+					}else{
+						this.numerator = ((this.denominator * wholenum) + this.numerator);
+						if(this.numerator>9999){
+							String temp = String.valueOf(this.numerator);
+							this.numerator = Integer.valueOf(temp.substring(0, 4));
+						}
+					}
+				}
 			}
 		}		
 	}
-
-
-
 
 	private static class SortingCompetitionComparator implements Comparator<Data> {
 
 		@Override
 		public int compare(Data fraction1, Data fraction2) {
-			// compare fraction by multiplication as big integers,
-			// to make sure we are not losing precision
-			if((fraction1.numlength+fraction2.denlength<18)&&(fraction1.denlength+fraction2.numlength<18)){
-				Long crossMult1 = (fraction1.numerator * fraction2.denominator);
-				Long crossMult2 = (fraction2.numerator * fraction1.denominator);
-				int res;
-
-				if(crossMult1<crossMult2){
-					res = -1;
-				}else{
-					if(crossMult1==crossMult2){
-						res = 0;
-					}else{
-						res = 1;
-					}
-					
-				}
-
-				if (res != 0) return res;
-
-				if(fraction1.numerator<fraction2.numerator){
-					return -1;
-				}else{
-					if(crossMult1==crossMult2){
-						return 0;
-					}else{
-						return 1;
-					}
-					
-				}
-				
+			// Compare fractions by cross multiplication. Each part of the fraction was limited to the 4 most significant digits so 
+			// overflow doesn't occur. If they are equal for as many digits an int can hold, then we call
+			// a function to compare them more precisely.
+			int crossMult1 = (fraction1.numerator * fraction2.denominator);
+			int crossMult2 = (fraction2.numerator * fraction1.denominator);
+			
+			if(crossMult1<crossMult2){
+				return -1;
 			}else{
-			
-			
-			BigInteger crossMult1 = fraction1.bignumerator.multiply(fraction2.bigdenominator);
-			BigInteger crossMult2 = fraction2.bignumerator.multiply(fraction1.bigdenominator);
-			
-			int res = crossMult1.compareTo(crossMult2);	
-			
-			if (res != 0) return res;
-			
-			return fraction1.bignumerator.compareTo(fraction2.bignumerator); // note: the numerator may be negative, that would reverse the ordering for negatives
-			}
+				if(crossMult1==crossMult2){
+					return checkPrecision(fraction1, fraction2);  
+				}else{
+					return 1;
+				}
+			}		
 		}
+
+		private int checkPrecision(Data fraction1, Data fraction2){
+			// If 4 digits isn't sufficient we need more precision. If they're still equal we need to make sure
+			// that non-simplified fractions are considered bigger than simpler ones and fractional representations
+			// are considered bigger than decimal representations.
+			return 0;
+		}
+		
 	}
 	
 	private static void writeOutResult(Data[] sorted, String outputFilename) throws FileNotFoundException {
