@@ -182,41 +182,80 @@ public class Group4 {
 				Long crossMult2 = (fraction2.numerator * fraction1.denominator);
 				int res;
 
-				if(crossMult1<crossMult2){
+				if(crossMult1<crossMult2){ 
 					res = -1;
 				}else{
 					if(crossMult1==crossMult2){
 						res = 0;
 					}else{
 						res = 1;
-					}
-					
+					}	
 				}
 
-				if (res != 0) return res;
+				if (res != 0) return res; // Need to ensure that when string values are equal, 
+				// fractions are considered bigger than decimals. Also need to ensure that when fractions are equal, 
+				// the simplified representation is considered smaller.
 
-				if(fraction1.numerator<fraction2.numerator){
-					return -1;
-				}else{
-					if(crossMult1==crossMult2){
-						return 0;
+				if((fraction1.str.contains("/")) && (fraction2.str.contains("/"))){ // fraction with smaller numerator is smaller.
+					if(fraction1.numerator<fraction2.numerator){
+						res = -1;
 					}else{
-						return 1;
+						if(crossMult1==crossMult2){
+							res = 0;
+						}else{
+							res = 1;
+						}
+					}	
+				}
+
+				if((fraction1.str.contains(".")) && (fraction2.str.contains("/"))){
+					if(fraction1.str.contains("-")){
+						res = 1; // Equal value, decimal is bigger when both negative.
+					}else{
+						res = -1;
 					}
-					
+				}
+
+				if((fraction1.str.contains("/")) && (fraction2.str.contains("."))){
+					if(fraction1.str.contains("-")){
+						res = -1; // Equal value, fraction is smaller when both negative
+					}else{
+						res = 1;
+					}
 				}
 				
+				return res;
+
 			}else{
 			
 			
-			BigInteger crossMult1 = fraction1.bignumerator.multiply(fraction2.bigdenominator);
-			BigInteger crossMult2 = fraction2.bignumerator.multiply(fraction1.bigdenominator);
-			
-			int res = crossMult1.compareTo(crossMult2);	
-			
-			if (res != 0) return res;
-			
-			return fraction1.bignumerator.compareTo(fraction2.bignumerator); // note: the numerator may be negative, that would reverse the ordering for negatives
+				BigInteger crossMult1 = fraction1.bignumerator.multiply(fraction2.bigdenominator);
+				BigInteger crossMult2 = fraction2.bignumerator.multiply(fraction1.bigdenominator);
+				int res = crossMult1.compareTo(crossMult2);	
+		
+				if (res != 0) return res;
+
+				if((fraction1.str.contains("/")) && (fraction2.str.contains("/"))){
+					res = fraction1.bignumerator.compareTo(fraction2.bignumerator); 
+				}
+
+				if((fraction1.str.contains(".")) && (fraction2.str.contains("/"))){
+					if(fraction1.str.contains("-")){
+						res = 1; // Equal value, decimal is bigger when both negative.
+					}else{
+						res = -1;
+					}
+				}
+
+				if((fraction1.str.contains("/")) && (fraction2.str.contains("."))){
+					if(fraction1.str.contains("-")){
+						res = -1; // Equal value, fraction is smaller when both negative
+					}else{
+						res = 1;
+					}
+				}
+
+				return res;
 			}
 		}
 	}
