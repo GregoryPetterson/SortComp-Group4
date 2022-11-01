@@ -72,8 +72,8 @@ public class Group4 {
 
 		for (int i = 0; i < toSortlength; i++) {
 			gonnaSort[i] = new Data(toSort[i]);
-			//System.out.println(gonnaSort[i].numerator);
-			//System.out.println(gonnaSort[i].denominator);
+			//System.out.println(gonnaSort[i].bignumerator);
+			//System.out.println(gonnaSort[i].bigdenominator);
 		}
 		
 		Arrays.sort(gonnaSort, new SortingCompetitionComparator());
@@ -96,7 +96,7 @@ public class Group4 {
 
 				this.numlength = saFrac[0].length();
 				this.denlength = saFrac[1].length();
-
+				
 				if(denlength<18 && numlength<18){
 					this.numerator = Long.valueOf(saFrac[0]);
 					this.denominator = Long.valueOf(saFrac[1]);
@@ -117,26 +117,53 @@ public class Group4 {
 					this.denlength = saDec[1].length();
 				}
 				
-					if(saDec.length == 1){
-						this.numerator = Long.valueOf(saDec[0]);
-						this.denominator = 1;	
+				if(saDec.length == 1){
+					this.numerator = Long.valueOf(saDec[0]);
+					this.denominator = 1;	
 						
-						this.bignumerator = new BigInteger(saDec[0]);
-						this.bigdenominator = new BigInteger("1");
-					}else{
-						if(denlength<18 && numlength<18){
-							this.numerator = Long.valueOf(saDec[0]);
-							this.denominator = Long.valueOf(saDec[1]);
-						}else{
-							this.numerator = 1234567891234567891L;
-							this.denominator = 1234567891234567891L;
+					this.bignumerator = new BigInteger(saDec[0]);
+					this.bigdenominator = new BigInteger("1");
+				}else{
+					if(denlength<18 && numlength<18){
+						long wholenum = Long.valueOf(saDec[0]);
+						this.numerator = Long.valueOf(saDec[1]);
+						this.denominator = (long) Math.pow(10, denlength);
 
+						if(saDec[0].charAt(0) == '-'){
+							this.numerator = ((wholenum * this.denominator) - this.numerator);
+						}else{
+							this.numerator = ((wholenum * this.denominator) + this.numerator);
 						}
 
-					}
-							
+						BigInteger whole = new BigInteger(saDec[0]);
+						this.bignumerator = new BigInteger(saDec[1]);
+						this.bigdenominator = BigInteger.valueOf(this.denominator);
 
-					
+						if(saDec[0].charAt(0) == '-'){
+							this.bignumerator = ((whole.multiply(this.bigdenominator)).subtract(this.bignumerator));
+						}else{
+							this.bignumerator = ((whole.multiply(this.bigdenominator)).add(this.bignumerator));
+						}
+
+					}else{
+							
+						// long enough so compare will check the Big versions instead
+						this.numlength = 20;
+						this.denlength = saDec[1].length();
+
+						BigInteger whole = new BigInteger(saDec[0]);
+						this.bignumerator = new BigInteger(saDec[1]);
+						this.bigdenominator = (new BigInteger("10")).pow(denlength);
+
+						if(saDec[0].charAt(0) == '-'){
+							this.bignumerator = ((whole.multiply(this.bigdenominator)).subtract(this.bignumerator));
+						}else{
+							this.bignumerator = ((whole.multiply(this.bigdenominator)).add(this.bignumerator));
+						}
+					}
+
+				}
+									
 			}
 		}		
 	}
