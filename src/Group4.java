@@ -10,7 +10,7 @@ import java.util.Scanner;
 
 
 public class Group4 {
-
+	static int thresh = 18;
 	public static void main(String[] args) throws InterruptedException, FileNotFoundException {
 
 		if (args.length < 2) {
@@ -72,8 +72,8 @@ public class Group4 {
 
 		for (int i = 0; i < toSortlength; i++) {
 			gonnaSort[i] = new Data(toSort[i]);
-			//System.out.println(gonnaSort[i].bignumerator);
-			//System.out.println(gonnaSort[i].bigdenominator);
+			// System.out.println(gonnaSort[i].numerator);
+			// System.out.println(gonnaSort[i].denominator);
 		}
 		
 		Arrays.sort(gonnaSort, new SortingCompetitionComparator());
@@ -97,12 +97,9 @@ public class Group4 {
 				this.numlength = saFrac[0].length();
 				this.denlength = saFrac[1].length();
 				
-				if(denlength<18 && numlength<18){
+				if(denlength<thresh && numlength<thresh){
 					this.numerator = Long.valueOf(saFrac[0]);
 					this.denominator = Long.valueOf(saFrac[1]);
-				}else{
-					this.numerator = 1234567891234567891L;
-					this.denominator = 1234567891234567891L;
 				}
 				
 				this.bignumerator = new BigInteger(saFrac[0]);
@@ -124,7 +121,7 @@ public class Group4 {
 					this.bignumerator = new BigInteger(saDec[0]);
 					this.bigdenominator = new BigInteger("1");
 				}else{
-					if(denlength<18 && numlength<18){
+					if(denlength<thresh && numlength<thresh){
 						long wholenum = Long.valueOf(saDec[0]);
 						this.numerator = Long.valueOf(saDec[1]);
 						this.denominator = (long) Math.pow(10, denlength);
@@ -177,9 +174,9 @@ public class Group4 {
 		public int compare(Data fraction1, Data fraction2) {
 			// compare fraction by multiplication as big integers,
 			// to make sure we are not losing precision
-			if(((fraction1.numlength+fraction2.denlength)<18)&&((fraction1.denlength+fraction2.numlength)<18)){
-				Long crossMult1 = (fraction1.numerator * fraction2.denominator);
-				Long crossMult2 = (fraction2.numerator * fraction1.denominator);
+			if(((fraction1.numlength+fraction2.denlength)<thresh)&&((fraction1.denlength+fraction2.numlength)<thresh)){
+				double crossMult1 = ((double)fraction1.numerator * (double)fraction2.denominator);
+				double crossMult2 = ((double)fraction2.numerator * (double)fraction1.denominator);
 				int res;
 
 				if(crossMult1<crossMult2){ 
