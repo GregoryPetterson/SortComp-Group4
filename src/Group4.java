@@ -91,6 +91,7 @@ public class Group4 {
 		
 		public Data(String string){
 			if(string.contains("/")){
+				// If the string is a fraction.
 				String[] saFrac = string.split("/");
 				this.str = string;
 
@@ -106,22 +107,26 @@ public class Group4 {
 				this.bigdenominator = new BigInteger(saFrac[1]);
 			
 			}else{
+				// Else the string is a decimal.
 				String[] saDec = string.split("\\.");
 				this.str = string;
-
-				this.numlength = saDec[0].length();
-				if(saDec.length > 1){
-					this.denlength = saDec[1].length();
-				}
 				
 				if(saDec.length == 1){
+					// If it's a whole number.
+					this.numlength = 1;
+					this.denlength = 1;
+
 					this.numerator = Long.valueOf(saDec[0]);
 					this.denominator = 1;	
 						
 					this.bignumerator = new BigInteger(saDec[0]);
 					this.bigdenominator = new BigInteger("1");
 				}else{
+					// Else it has a period.
+					this.denlength = saDec[1].length();
+
 					if(denlength<thresh && numlength<thresh){
+						// If it's small enought to fit into a primitve.
 						long wholenum = Long.valueOf(saDec[0]);
 						this.numerator = Long.valueOf(saDec[1]);
 						this.denominator = (long) Math.pow(10, denlength);
@@ -141,6 +146,10 @@ public class Group4 {
 						}else{
 							this.bignumerator = ((whole.multiply(this.bigdenominator)).add(this.bignumerator));
 						}
+
+						//setting the denlength and num length to the correct values for comparator.
+						this.numlength = denlength +2;
+						this.denlength = denlength +2;
 
 					}else{
 							
@@ -177,6 +186,10 @@ public class Group4 {
 			if(((fraction1.numlength+fraction2.denlength)<thresh)&&((fraction1.denlength+fraction2.numlength)<thresh)){
 				double crossMult1 = ((double)fraction1.numerator * (double)fraction2.denominator);
 				double crossMult2 = ((double)fraction2.numerator * (double)fraction1.denominator);
+				//long crossMult1 = (fraction1.numerator * fraction2.denominator);
+				//long crossMult2 = (fraction2.numerator * fraction1.denominator);
+
+
 				int res;
 
 				if(crossMult1<crossMult2){ 
